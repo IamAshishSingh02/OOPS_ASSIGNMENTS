@@ -1,58 +1,67 @@
-#include<iostream>
-#include<fstream>
+#include<bits/stdc++.h>
 using namespace std;
-class Employee
-{
+
+class Employee {
+private:
     string name;
     int id;
     double salary;
-    public:
-    void accept()
-    {
-        cout<<"Enter Name: ";
-        cin.ignore();
-        getline(cin,name);
-        // cout<<endl;
-        cout<<"Enter ID: ";
-        cin>>id;
-        // cout<<endl;
-        cout<<"Enter Salary: ";
-        cin>>salary;
-        // cout<<endl;
 
+public:
+    void accept() {
+        cout << "Enter Employee Name: ";
+        cin.ignore();  
+        getline(cin, name);
+        cout << "Enter Employee Id: ";
+        cin >> id;
+        cout << "Enter Employee Salary: ";
+        cin >> salary;
     }
-    void display()
-    {
-        cout<<"\nName : "<<name;
-        cout<<"\nId : "<<id;
-        cout<<"\nSalary : "<<salary<<endl;
+
+    void disp() const {
+        cout << "\nName: " << name;
+        cout << "\nId: " << id;
+        cout << "\nSalary: " << salary << endl;
+    }
+
+    void writeToFile(ofstream &f) const {
+        f << name << endl << id << endl << salary << endl;
+    }
+
+    void readFromFile(ifstream &f) {
+        getline(f, name);
+        f >> id;
+        f >> salary;
+        f.ignore(); 
     }
 };
-int main()
-    {
-        Employee o[10];
-        fstream f;
-        int i,n;
-        f.open("demo.txt",ios::out);
-        cout<<"\n Enter the number of employees you want to store : ";
-        cin>>n;
-        for(i=0;i<n;i++)
-        {
-        cout<<"\nEnter information of Employee "<<i+1<<"\n";
-        o[i].accept();
-        f.write((char*)&o[i],sizeof o[i]);
-        }
-        f.close();
 
-        f.open("demo.txt",ios::in);
-        cout<<endl;
-        cout<<"Information of Employees is as follows"<<endl;
-        for(i=0;i<n;i++)
-        {
-           cout<<"\nEmployee "<<i+1<<" : "; 
-           f.write((char*)&o[i],sizeof(o[i]));
-           o[i].display(); 
-        }
-        f.close();
-        return 0;
+int main() {
+    Employee o[10];
+    ofstream fout("demo.txt");
+    int n;
+
+    cout << "Enter the number of employees (max 10): ";
+    cin >> n;
+
+    if (n > 10) {
+        cout << "Maximum number of employees is 10." << endl;
+        return 1;
     }
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter details of Employee " << i + 1 << ": \n";
+        o[i].accept();
+        o[i].writeToFile(fout);
+    }
+    fout.close();
+
+    ifstream fin("demo.txt");
+    cout << "\nInformation of Employees is as follows: \n";
+    for (int i = 0; i < n; i++) {
+        cout << "\nEmployee " << i + 1 << ": ";
+        o[i].readFromFile(fin);
+        o[i].disp();
+    }
+    fin.close();
+}
